@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* 页面标题样式 */
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .container {
+            position: relative;
+            width: 400px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .wheel {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s ease-out;
+            margin: 0 auto;
+        }
+
+        .sector {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            clip-path: polygon(100% 0, 100% 100%, 0 100%);
+        }
+
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 40px;
+            background-color: black;
+            z-index: 2;
+        }
+
+        button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #history {
+            list-style: none;
+            padding: 0;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面标题 -->
+    <div class="title">我来给出建议</div>
+
+    <div class="container">
+        <div class="wheel">
+            <!-- 扇区由JavaScript生成 -->
+        </div>
+        <div class="pointer"></div>
+        <button onclick="startSpin()">转转转</button>
+        <ul id="history"></ul>
+    </div>
+
+    <script>
+        // 初始化转盘
+        const wheel = document.querySelector('.wheel');
+        const colors = ['#ff6666', '#66ff66', '#6666ff'];
+        const sections = 18;
+        let currentRotation = 0;
+        let isSpinning = false;
+
+        // 定义选项名称
+        const options = [
+            "二合一", "我爱小狗", "运钞车", "小布丁", "蓝色蝴蝶", 
+            "粉色小鱼人", "粉考拉", "薯条", "猫耳", "野餐", 
+            "蝴蝶结兔子", "困鼠了", "清爽小猫", "窗户小熊", 
+            "好运连连", "派大星", "大哥大","春天蘑菇屋"
+        ];
+
+        // 从 LocalStorage 加载历史记录
+        let historyData = JSON.parse(localStorage.getItem('lotteryHistory')) || [];
+
+        // 显示历史记录
+        const historyElement = document.getElementById('history');
+        function renderHistory() {
+            historyElement.innerHTML = historyData
+                .map(item => `<li>${item}</li>`)
+                .join('');
+        }
+        function renderHistory() {
+            historyElement.innerHTML = historyData
+                .map(item => `<li>🎉 ${item}</li>`)
+                .join('');
+        }
+        renderHistory();
+
+        // 生成扇区
+        for (let i = 0; i < sections; i++) {
+            const sector = document.createElement('div');
+            sector.className = 'sector';
+            sector.style.transform = `rotate(${i * (360 / sections)}deg)`;
+            sector.style.backgroundColor = colors[i % 3];
+            wheel.appendChild(sector);
+        }
+
+        function startSpin() {
+            if (isSpinning) return;
+            isSpinning = true;
+            
+            // 随机选择区域（0-16）
+            const selected = Math.floor(Math.random() * sections);
+            
+            // 计算目标角度（增加5圈旋转效果）
+            const degreesPerSection = 360 / sections;
+            const targetRotation = currentRotation + 5 * 360 + selected * degreesPerSection + degreesPerSection/2;
+            
+            // 应用旋转动画
+            wheel.style.transition = 'transform 4s ease-out';
+            wheel.style.transform = `rotate(${targetRotation}deg)`;
+            
+            currentRotation = targetRotation;
+        }
+
+        // 监听动画结束
+        wheel.addEventListener('transitionend', () => {
+            isSpinning = false;
+            wheel.style.transition = 'none';
+            
+            // 计算实际中奖区域
+            const finalRotation = currentRotation % 360;
+            const degreesPerSection = 360 / sections;
+            const adjustedRotation = (finalRotation - degreesPerSection/2 + 360) % 360;
+            const result = Math.floor(adjustedRotation / degreesPerSection);
+            
+            // 获取当前时间
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // 补零
+            const day = String(now.getDate()).padStart(2, '0'); // 补零
+            const hours = String(now.getHours()).padStart(2, '0'); // 补零
+            const minutes = String(now.getMinutes()).padStart(2, '0'); // 补零
+
+            // 格式化时间
+            const timeString = `${month}月${day}日 ${hours}:${minutes}`;
+            
+            // 添加中奖记录
+            const record = `抽到了：${options[result]}（${timeString}）`;
+            historyData.unshift(record); // 添加到数组开头
+            localStorage.setItem('lotteryHistory', JSON.stringify(historyData)); // 保存到 LocalStorage
+            renderHistory(); // 更新页面显示
+        });
+    </script>
+</body>
+</html>
