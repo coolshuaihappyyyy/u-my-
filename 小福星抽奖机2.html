@@ -18,8 +18,8 @@
         }
 
         .wheel {
-            width: 300px;
-            height: 300px;
+            width: 320px;
+            height: 320px;
             border-radius: 50%;
             position: relative;
             overflow: hidden;
@@ -63,22 +63,22 @@
 </head>
 <body>
     <!-- 页面标题 -->
-    <div class="title">手机壳转转转</div>
+    <div class="title">我来给出建议</div>
 
     <div class="container">
         <div class="wheel">
             <!-- 扇区由JavaScript生成 -->
         </div>
         <div class="pointer"></div>
-        <button onclick="startSpin()">开始抽奖</button>
+        <button onclick="startSpin()">转转转</button>
         <ul id="history"></ul>
     </div>
 
     <script>
         // 初始化转盘
         const wheel = document.querySelector('.wheel');
-        const colors = ['#ff6666', '#66ff66'];
-        const sections = 17;
+        const colors = ['#ff6666', '#66ff66', '#6666ff'];
+        const sections = 18;
         let currentRotation = 0;
         let isSpinning = false;
 
@@ -87,7 +87,7 @@
             "二合一", "我爱小狗", "运钞车", "小布丁", "蓝色蝴蝶", 
             "粉色小鱼人", "粉考拉", "薯条", "猫耳", "野餐", 
             "蝴蝶结兔子", "困鼠了", "清爽小猫", "窗户小熊", 
-            "好运连连", "派大星", "大哥大"
+            "好运连连", "派大星", "大哥大","春天蘑菇屋"
         ];
 
         // 从 LocalStorage 加载历史记录
@@ -100,6 +100,11 @@
                 .map(item => `<li>${item}</li>`)
                 .join('');
         }
+        function renderHistory() {
+            historyElement.innerHTML = historyData
+                .map(item => `<li>🎉 ${item}</li>`)
+                .join('');
+        }
         renderHistory();
 
         // 生成扇区
@@ -107,7 +112,7 @@
             const sector = document.createElement('div');
             sector.className = 'sector';
             sector.style.transform = `rotate(${i * (360 / sections)}deg)`;
-            sector.style.backgroundColor = colors[i % 2];
+            sector.style.backgroundColor = colors[i % 3];
             wheel.appendChild(sector);
         }
 
@@ -151,7 +156,7 @@
             const timeString = `${month}月${day}日 ${hours}:${minutes}`;
             
             // 添加中奖记录
-            const record = `就决定是你了：${options[result]}（${timeString}）`;
+            const record = `抽到了：${options[result]}（${timeString}）`;
             historyData.unshift(record); // 添加到数组开头
             localStorage.setItem('lotteryHistory', JSON.stringify(historyData)); // 保存到 LocalStorage
             renderHistory(); // 更新页面显示
