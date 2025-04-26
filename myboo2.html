@@ -78,7 +78,7 @@
         // 初始化转盘
         const wheel = document.querySelector('.wheel');
         const colors = ['#ff6666', '#66ff66', '#6666ff'];
-        const sections = 18;
+        const sections = 19;
         let currentRotation = 0;
         let isSpinning = false;
 
@@ -87,7 +87,7 @@
             "二合一", "我爱小狗", "运钞车", "小布丁", "蓝色蝴蝶", 
             "粉色小鱼人", "粉考拉", "薯条", "猫耳", "野餐", 
             "蝴蝶结兔子", "困鼠了", "清爽小猫", "窗户小熊", 
-            "好运连连", "派大星", "大哥大","春天蘑菇屋"
+            "好运连连", "派大星", "大哥大","春天蘑菇屋","盐巴罐子"
         ];
 
         // 从 LocalStorage 加载历史记录
@@ -120,7 +120,7 @@
             if (isSpinning) return;
             isSpinning = true;
             
-            // 随机选择区域（0-16）
+            // 随机选择区域（0-18）
             const selected = Math.floor(Math.random() * sections);
             
             // 计算目标角度（增加5圈旋转效果）
